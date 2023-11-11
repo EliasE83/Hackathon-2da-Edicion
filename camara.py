@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
+import pyttsx3
 import csv
 
 # Obtener la ruta absoluta de los archivos YOLO
 weights_path = 'yolov3.weights'
 config_path = 'yolov3.cfg'
+
+detected_persons = [] 
 
 # Cargar el modelo YOLOv3
 net = cv2.dnn.readNet(weights_path, config_path)
@@ -81,6 +84,28 @@ while True:
         distance = (focal_length * real_height) / pixel_height
 
         # Mostrar etiqueta con distancia
+        label_with_distance = f'{label} Está a una distancia de {round(distance, 2)} metros'
+        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+        cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
+
+        
+        
+        if label == 'bottle':
+            person_id = str(class_ids[i]) + '_' + str(boxes[i])
+            
+            if person_id not in detected_persons:
+                
+                
+                
+                
+                engine = pyttsx3.init()
+                print(label_with_distance)
+                engine.say(label_with_distance)
+                engine.runAndWait()
+
+                detected_persons.append(person_id)    
+        
+
         label_with_distance = f'{label} {confidence} Está a una distancia de {round(distance, 2)} metros'
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
