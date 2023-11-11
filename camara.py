@@ -81,7 +81,7 @@ while True:
         distance = (focal_length * real_height) / pixel_height
 
         # Mostrar etiqueta con distancia
-        label_with_distance = f'{label} {confidence} Distancia: {round(distance, 2)} metros'
+        label_with_distance = f'{label} {confidence} Está a una distancia de {round(distance, 2)} metros'
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
 
