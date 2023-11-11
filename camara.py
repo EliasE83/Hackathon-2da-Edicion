@@ -20,6 +20,10 @@ with open('coco.names', 'r') as f:
 cap = cv2.VideoCapture(0)
 
 
+# Abrir un archivo CSV para escribir las detecciones
+csv_file = open('detecciones.csv', 'w', newline='')
+csv_writer = csv.writer(csv_file)
+
 
 
 
@@ -71,7 +75,6 @@ while True:
     for i in indexes.flatten():
         x, y, w, h = boxes[i]
         label = str(classes[class_ids[i]])
-        
         confidence = str(round(confidences[i], 2))
         color = colors[i]
 
@@ -141,9 +144,16 @@ while True:
         
         
 
+        label_with_distance = f'{label} {confidence} Está a una distancia de {round(distance, 2)} metros'
+        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+        cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
+
+        print(label_with_distance)
+
     cv2.imshow('YOLO Object Detection', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+csv_file.close()
 cap.release()
 cv2.destroyAllWindows()
