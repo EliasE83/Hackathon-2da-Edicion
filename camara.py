@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import pyttsx3
-import csv
 
 # Obtener la ruta absoluta de los archivos YOLO
 weights_path = 'yolov3.weights'
@@ -19,11 +18,6 @@ with open('coco.names', 'r') as f:
 
 # Iniciar la cámara
 cap = cv2.VideoCapture(0)
-
-
-# Abrir un archivo CSV para escribir las detecciones
-csv_file = open('detecciones.csv', 'w', newline='')
-csv_writer = csv.writer(csv_file)
 
 
 while True:
@@ -84,27 +78,64 @@ while True:
         distance = (focal_length * real_height) / pixel_height
 
         # Mostrar etiqueta con distancia
-        label_with_distance = f'{label} Está a una distancia de {round(distance, 2)} metros'
+        label_with_distance = f'{label} esta a una distancia de {round(distance, 2)} metros'
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
 
         
         
-        if label == 'bottle':
+        if label == 'botella':
             person_id = str(class_ids[i]) + '_' + str(boxes[i])
             
             if person_id not in detected_persons:
-                
-                
-                
-                
+
                 engine = pyttsx3.init()
                 print(label_with_distance)
                 engine.say(label_with_distance)
                 engine.runAndWait()
 
                 detected_persons.append(person_id)    
+                detected_persons.append(person_id)
         
+
+        if label == 'senal de alto':
+            person_id = str(class_ids[i]) + '_' + str(boxes[i])
+            
+            if person_id not in detected_persons:
+
+                engine = pyttsx3.init()
+                print(label_with_distance)
+                engine.say('Precaucion, hay una ' + label_with_distance)
+                engine.runAndWait()
+
+                detected_persons.append(person_id)
+
+        if label == 'semaforo':
+            person_id = str(class_ids[i]) + '_' + str(boxes[i])
+            
+            if person_id not in detected_persons:
+
+                engine = pyttsx3.init()
+                print(label_with_distance)
+                engine.say('Precaucion, te acercas a un ' + label_with_distance)
+                engine.runAndWait()
+
+                detected_persons.append(person_id)
+
+        if label == 'silla':
+            if distance < 1.0: 
+                person_id = str(class_ids[i]) + '_' + str(boxes[i])
+                
+                if person_id not in detected_persons:
+    
+                    engine = pyttsx3.init()
+                    print('Precaucion, una ' + label_with_distance)
+                    engine.say('Precaucion, una ' +  label_with_distance)
+                    engine.runAndWait()
+
+                    detected_persons.append(person_id)
+            
+                
 
         label_with_distance = f'{label} {confidence} Está a una distancia de {round(distance, 2)} metros'
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
@@ -116,6 +147,5 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-csv_file.close()
 cap.release()
 cv2.destroyAllWindows()
