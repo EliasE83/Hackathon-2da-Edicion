@@ -20,13 +20,6 @@ with open('coco.names', 'r') as f:
 cap = cv2.VideoCapture(0)
 
 
-# Abrir un archivo CSV para escribir las detecciones
-csv_file = open('detecciones.csv', 'w', newline='')
-csv_writer = csv.writer(csv_file)
-
-
-
-
 while True:
     _, img = cap.read()
     height, width, _ = img.shape
@@ -64,7 +57,7 @@ while True:
                 confidences.append(float(confidence))
                 class_ids.append(class_id)
 
-    # Aplicar supresión no máxima para eliminar detecciones superpuestas
+    # Aplicar supresión no máxima para eliminar detecciones superpuestas comm
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
 
     # Mostrar las detecciones en la imagen
@@ -154,6 +147,5 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-csv_file.close()
 cap.release()
 cv2.destroyAllWindows()
