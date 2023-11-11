@@ -94,9 +94,49 @@ while True:
                 engine.say(label_with_distance)
                 engine.runAndWait()
 
-                detected_persons.append(person_id)    
                 detected_persons.append(person_id)
         
+
+        if label == 'senal de alto':
+            person_id = str(class_ids[i]) + '_' + str(boxes[i])
+            
+            if person_id not in detected_persons:
+
+                engine = pyttsx3.init()
+                print(label_with_distance)
+                engine.say('Precaucion, hay una ' + label_with_distance)
+                engine.runAndWait()
+
+                detected_persons.append(person_id)
+
+        if label == 'semaforo':
+            person_id = str(class_ids[i]) + '_' + str(boxes[i])
+            
+            if person_id not in detected_persons:
+
+                engine = pyttsx3.init()
+                print(label_with_distance)
+                engine.say('Precaucion, te acercas a un ' + label_with_distance)
+                engine.runAndWait()
+
+                detected_persons.append(person_id)
+
+        if label == 'silla':
+            if distance < 1.0: 
+                person_id = str(class_ids[i]) + '_' + str(boxes[i])
+                
+                if person_id not in detected_persons:
+    
+                    engine = pyttsx3.init()
+                    print('Precaucion, una ' + label_with_distance)
+                    engine.say('Precaucion, una ' +  label_with_distance)
+                    engine.runAndWait()
+
+                    detected_persons.append(person_id)
+            
+        
+                detected_persons.append(person_id)    
+                detected_persons.append(person_id)        
 
         if label == 'senal de alto':
             person_id = str(class_ids[i]) + '_' + str(boxes[i])
