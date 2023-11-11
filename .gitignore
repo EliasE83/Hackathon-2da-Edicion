@@ -1,0 +1,3 @@
+# Archivos de pesos de YOLOv3
+*.weights
+*.conv.*
