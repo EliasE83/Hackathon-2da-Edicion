@@ -57,7 +57,7 @@ while True:
                 confidences.append(float(confidence))
                 class_ids.append(class_id)
 
-    # Aplicar supresión no máxima para eliminar detecciones superpuestas
+    # Aplicar supresión no máxima para eliminar detecciones superpuestas comm
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
 
     # Mostrar las detecciones en la imagen
