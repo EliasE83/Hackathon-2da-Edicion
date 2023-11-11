@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import os
+import csv
 
 # Obtener la ruta absoluta de los archivos YOLO
 weights_path = 'yolov3.weights'
@@ -15,7 +15,13 @@ with open('coco.names', 'r') as f:
     classes = f.read().splitlines()
 
 # Iniciar la cámara
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
+
+
+# Abrir un archivo CSV para escribir las detecciones
+csv_file = open('detecciones.csv', 'w', newline='')
+csv_writer = csv.writer(csv_file)
+
 
 while True:
     _, img = cap.read()
@@ -26,12 +32,9 @@ while True:
     net.setInput(blob)
 
     # Obtener las capas de salida
-    # Obtener las capas de salida
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
     outputs = net.forward(output_layers)
-
-
 
     # Listas para almacenar cajas delimitadoras, confianzas y clases
     boxes = []
@@ -63,18 +66,31 @@ while True:
     # Mostrar las detecciones en la imagen
     font = cv2.FONT_HERSHEY_PLAIN
     colors = np.random.uniform(0, 255, size=(len(classes), 3))
-    if len(indexes) > 0:
-        for i in indexes.flatten():
-            x, y, w, h = boxes[i]
-            label = str(classes[class_ids[i]])
-            confidence = str(round(confidences[i], 2))
-            color = colors[i]
-            cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(img, f'{label} {confidence}', (x, y - 5), font, 1, color, 1)
+    
+    # Después de obtener las coordenadas de los objetos
+    for i in indexes.flatten():
+        x, y, w, h = boxes[i]
+        label = str(classes[class_ids[i]])
+        confidence = str(round(confidences[i], 2))
+        color = colors[i]
+
+        # Calcular la distancia (esto es solo un ejemplo, necesitarás ajustar según tu calibración)
+        focal_length = 300  # Ajusta según tus datos de calibración
+        real_height = 1.0  # Altura real del objeto
+        pixel_height = h  # Altura del objeto en píxeles
+        distance = (focal_length * real_height) / pixel_height
+
+        # Mostrar etiqueta con distancia
+        label_with_distance = f'{label} {confidence} Está a una distancia de {round(distance, 2)} metros'
+        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+        cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
+
+        print(label_with_distance)
 
     cv2.imshow('YOLO Object Detection', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+csv_file.close()
 cap.release()
 cv2.destroyAllWindows()
