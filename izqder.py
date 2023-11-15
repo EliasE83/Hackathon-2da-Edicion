@@ -12,7 +12,7 @@ classes = []
 with open('coco.names', 'r') as f:
     classes = f.read().splitlines()
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 while True:
     _, img = cap.read()
@@ -61,22 +61,34 @@ while True:
         real_height = 1.0 
         pixel_height = h  
         distance = (focal_length * real_height) / pixel_height
-        label_with_distance = f'{label} está a una distancia de {round(distance, 2)} metros'
+        label_with_distance = f'{label} ' #esta a una distancia de {round(distance, 2)} metros'
+
+        # Calcula el centro horizontal del objeto y de la imagen
+        center_image_x = width / 2
+        center_object_x = x + w / 2
+
+        # Compara para determinar la posición del objeto
+        if center_object_x < center_image_x:
+            position = 'a la izquierda'
+        elif center_object_x > center_image_x:
+            position = 'a la derecha'
+        else:
+            position = 'en el centro'
 
         person_id = f'{class_ids[i]}_{boxes[i]}'
         if person_id not in detected_persons:
             if label == 'botella':
-                speech = 'Esto es una {label_with_distance}'
+                speech = f'Esto es una {label_with_distance}'
             elif label == 'senal de alto':
                 speech = f'Precaucion, hay una {label_with_distance}'
             elif label == 'semaforo':
                 speech = f'Precaucion, te acercas a un {label_with_distance}'
-            elif label == 'silla' and distance < 1.0:
+            elif label == 'silla' and distance < 2.0:
                 speech = f'Precaucion, una {label_with_distance}'
             elif label == 'tenedor':
                 speech = f'Esto es un {label_with_distance}'
             else:
-                speech = ''  # Definir una cadena vacía si no se satisface ninguna condición
+                speech = ''   # Definir una cadena vacía si no se satisface ninguna condición
             
             if speech:
                 engine = pyttsx3.init()
@@ -85,11 +97,10 @@ while True:
                 engine.runAndWait()
                 detected_persons.append(person_id)
 
-            
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(img, label_with_distance, (x, y - 5), font, 1, color, 1)
+        cv2.putText(img, label_with_distance + f' ({position})', (x, y - 5), font, 1, color, 1)
 
-    cv2.imshow('YOLO Object Detection', img)
+    cv2.imshow('V-My Eyes', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
